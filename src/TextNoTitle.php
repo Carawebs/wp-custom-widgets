@@ -2,11 +2,12 @@
 
 namespace Carawebs\Widgets;
 
+use Carawebs\Widgets\Controllers;
+
 /**
- * Core class used to implement a Text widget.
+ * Amended text widget.
  *
- * @since 2.8.0
- *
+ * @since 1.0.0
  * @see WP_Widget
  */
 class TextNoTitle extends \WP_Widget {
@@ -14,10 +15,13 @@ class TextNoTitle extends \WP_Widget {
     /**
      * Sets up a new Text widget instance.
      *
-     * @since 2.8.0
+     * Inject a data controller by means of DI.
+     *
+     * @since 1.0.0
      * @access public
      */
-    public function __construct() {
+    public function __construct(Controllers\TextNoTitle $data) {
+        $this->data = $data;
         $widget_ops = array(
             'classname' => 'widget_text',
             'description' => __( 'Arbitrary text or HTML - no title in output.' ),
@@ -57,9 +61,6 @@ class TextNoTitle extends \WP_Widget {
         $text = apply_filters( 'widget_text', $widget_text, $instance, $this );
 
         echo $args['before_widget'];
-        // if ( ! empty( $title ) ) {
-        //     echo $args['before_title'] . $title . $args['after_title'];
-        // }
         ?>
             <div class="textwidget"><?php echo !empty( $instance['filter'] ) ? wpautop( $text ) : $text; ?></div>
         <?php

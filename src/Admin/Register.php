@@ -1,6 +1,8 @@
 <?php
 namespace Carawebs\Widgets\Admin;
 
+use DI;
+
 /**
 * Register custom widgets_init
 *
@@ -9,6 +11,7 @@ namespace Carawebs\Widgets\Admin;
 */
 class Register {
     function __construct( array $widgets = [] ) {
+        $this->container = DI\ContainerBuilder::buildDevContainer();
         $this->set_widgets($widgets);
         $this->widgets_init();
     }
@@ -32,7 +35,11 @@ class Register {
 
     public function register_widgets() {
         foreach( $this->widgets as $widget ) {
-            register_widget( 'Carawebs\Widgets\\' . $widget );
+            global $wp_widget_factory;
+            $widgetClass = 'Carawebs\Widgets\\' . $widget;
+            $widgetObject = $this->container->get($widgetClass);
+            // Register with WordPress
+            $wp_widget_factory->widgets[$widget] = $widgetObject;
         }
     }
 

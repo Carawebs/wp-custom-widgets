@@ -9,5 +9,10 @@
             "email": "david@carawebs.com"
         }
     ],
-    "require": {}
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Carawebs\\Widgets\\": "src"
+        }
+    }
 }

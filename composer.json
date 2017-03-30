@@ -1,0 +1,13 @@
+{
+    "name": "carawebs/wp-custom-widgets",
+    "description": "Custom Widgets for WordPress.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "David Egan",
+            "email": "david@carawebs.com"
+        }
+    ],
+    "require": {}
+}

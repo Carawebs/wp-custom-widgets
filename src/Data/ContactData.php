@@ -4,11 +4,11 @@ namespace Carawebs\Widgets\Data;
 /**
  *
  */
-class AddressData extends Data
+class ContactData extends Data
 {
     private $defaultData;
 
-    public $data;
+    //public $container;
 
     function __construct()
     {
@@ -17,15 +17,13 @@ class AddressData extends Data
     }
 
     /**
-     * Fetch this from the DB?
+     * Fetch this from the DB - registered by carawebs/wp-contact
      */
     private function setDefaultData()
     {
-        $this->defaultData = [
-            'address_line_1' => 'Cloonanass',
-            'address_line_2' => 'Sixmilebridge',
-            'address_county' => 'Co. Clare'
-        ];
+        if (class_exists('\Carawebs\Contact\Data\Combined')) {
+            $this->defaultData = new \Carawebs\Contact\Data\Combined;
+        }
     }
 
     /**
@@ -33,6 +31,6 @@ class AddressData extends Data
      */
     private function setData()
     {
-        $this->data = apply_filters('carawebs/address-data', $this->defaultData);
+        $this->container = apply_filters('carawebs/address-data', $this->defaultData);
     }
 }

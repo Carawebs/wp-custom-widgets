@@ -7,7 +7,7 @@ namespace Carawebs\Widgets\Data;
 class Data implements \ArrayAccess
 {
 
-    public $data = [];
+    public $container = [];
 
     public function offsetExists ($offset)
     {

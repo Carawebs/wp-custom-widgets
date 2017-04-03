@@ -15,7 +15,7 @@ use Carawebs\Widgets\Controllers;
 * @see https://codex.wordpress.org/Widgets_API
 *
 */
-class Address extends \WP_Widget {
+class CompanyNumbers extends \WP_Widget {
 
     /**
     * Sets up the widgets name etc
@@ -23,9 +23,9 @@ class Address extends \WP_Widget {
     public function __construct(Controllers\Contact $data) {
         $this->data = $data;
         parent::__construct(
-            'address_widget',                                     // Base ID
-            __( 'Carawebs Address', 'address' ),                  // Name
-            ['description' => __( 'Display address', 'address' )] // Args
+            'company_numbers_widget',                                     // Base ID
+            __( 'Carawebs Company Numbers', 'address' ),                  // Name
+            ['description' => __( 'Display Company Numbers', 'address' )] // Args
         );
     }
 
@@ -41,8 +41,8 @@ class Address extends \WP_Widget {
         if ( ! empty( $instance['title'] ) ) {
             echo $args['before_title'] . apply_filters( 'widget_title', $instance['title'] ). $args['after_title'];
         }
-        $data = $this->data->getAddress();
-        include dirname(__FILE__).'/partials/address.php';
+        $data = $this->data->getCompanyDetails();
+        include dirname(__FILE__).'/partials/company-numbers.php';
         echo $args['after_widget'];
     }
 

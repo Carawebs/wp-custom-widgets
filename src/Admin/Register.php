@@ -4,12 +4,25 @@ namespace Carawebs\Widgets\Admin;
 use DI;
 
 /**
-* Register custom widgets_init
+* Register custom widgets_init - entry point.
 *
-* Create an instance of this class from within your theme, hooked to the
-* 'after_setup_theme' WP hook.
+* Create an instance of this class within theme - hook to 'after_setup_theme'.
+* @TODO Refine this process - see https://torquemag.io/2017/01/using-automatic-dependency-injection-wordpress-development/
 */
 class Register {
+
+    /**
+     * The DI Container
+     * @var DI\Container
+     */
+    protected $container;
+
+    /**
+     * Widgets to register
+     * @var array
+     */
+    protected $widgets;
+
     function __construct( array $widgets = [] ) {
         $this->container = DI\ContainerBuilder::buildDevContainer();
         $this->set_widgets($widgets);

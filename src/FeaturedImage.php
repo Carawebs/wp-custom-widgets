@@ -1,6 +1,5 @@
 <?php
 namespace Carawebs\Widgets;
-use Carawebs\Display;
 
 class FeaturedImage extends \WP_Widget {
 
@@ -25,15 +24,16 @@ class FeaturedImage extends \WP_Widget {
    */
   public function widget( $args, $instance ) {
 
-    $imagedata = Display\Image::featured_image( get_the_ID(), '', ['center-block'], true );
+
+      $image = get_the_post_thumbnail( get_the_ID(), 'full', ['class'=>'center-block img-fluid']);
+      $caption = get_post( get_post_thumbnail_id() )->post_excerpt;
+    // $imagedata = Display\Image::featured_image( get_the_ID(), '', ['center-block'], true );
 
     // outputs the content of the widget
     extract( $args );
     echo $before_widget;
-    echo $imagedata['image'];
-    echo ! empty( $imagedata['caption'] )
-      ? "<p class='wp-caption-text'>{$imagedata['caption']}</p>"
-      : NULL;
+    echo $image;
+    echo !empty($caption) ? "<span class='wp-caption-text'>$caption</span>" : NULL;
     echo $after_widget;
 
   }

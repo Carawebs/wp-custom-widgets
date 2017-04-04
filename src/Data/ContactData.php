@@ -8,8 +8,6 @@ class ContactData extends Data
 {
     private $defaultData;
 
-    //public $container;
-
     function __construct()
     {
         $this->setDefaultData();
@@ -27,10 +25,10 @@ class ContactData extends Data
     }
 
     /**
-     * Plugin or theme simply has to hook data to 'carawebs/address-data'
+     * Set data for this \ArrayAccess object.
      */
     private function setData()
     {
-        $this->container = apply_filters('carawebs/address-data', $this->defaultData);
+        $this->container = apply_filters('carawebs/combined-contact-data', $this->defaultData);
     }
 }

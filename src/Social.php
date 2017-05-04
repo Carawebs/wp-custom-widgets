@@ -42,9 +42,6 @@ class Social extends \WP_Widget {
         $channels = [];
         foreach ($data as $key => $value) {
             if(!in_array($key, $include)) continue;
-            if ('linkedin' === $key) {
-                $key = 'LinkedIn';
-            }
             $channels[$key] = $value;
         }
         extract( $args );
@@ -78,15 +75,18 @@ class Social extends \WP_Widget {
         <p>Enter an introductory sentence if required.</p>
         <p>
             <label for="<?= $this->get_field_id('intro'); ?>"><?php _e('Intro:'); ?></label>
-            <input class="widefat" id="<?= $this->get_field_id('intro'); ?>" name="<?php echo $this->get_field_name('intro'); ?>" type="text" value="<?php echo $intro; ?>" />
+            <input class="widefat" id="<?= $this->get_field_id('intro'); ?>" name="<?php echo $this->get_field_name('intro'); ?>" type="text" value="<?= $intro; ?>" />
         </p>
         <p>Which Social Channels do you want to include?</p>
         <p>
             <?php
             foreach ($available as $key => $value) {
                 $selected = in_array($key, $included_channels) ? ' checked' : NULL;
+                $linkText = !empty( $instance['link_text'][$key] ) ? esc_attr( $instance['link_text'][$key] ) : NULL;
                 ?>
                 <input id="<?= $key; ?>" type="checkbox" name="<?= $this->get_field_name('included_channels'); ?>[]" value="<?= $key; ?>"<?= $selected;?>>
+                <label for="<?= $key; ?>"><?php echo ucfirst($key); ?></label>
+                <input id="<?= $key; ?>-link-text" name="<?= $this->get_field_name('link_text'); ?>[<?= $key; ?>]" type="text" value="<?= $linkText; ?>">
                 <label for="<?= $key; ?>"><?php echo ucfirst($key); ?></label>
                 <br>
                 <?php
@@ -127,6 +127,13 @@ class Social extends \WP_Widget {
             {
                 if ( '' !== trim( $value ) )
                     $instance['included_channels'][] = $value;
+            }
+        }
+        if (isset($new_instance['link_text'])) {
+            foreach ($new_instance['link_text'] as $key => $value)
+            {
+                if ( '' !== trim( $value ) )
+                    $instance['link_text'][$key] = $value;
             }
         }
 

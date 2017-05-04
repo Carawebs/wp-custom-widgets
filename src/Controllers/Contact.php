@@ -21,4 +21,9 @@ class Contact extends Controller
     {
         return $this->data['carawebs_company'] ?? [];
     }
+
+    public function getSocialDetails() : array
+    {
+        return $this->data['carawebs_social'] ?? [];
+    }
 }

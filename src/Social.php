@@ -9,14 +9,24 @@ class Social extends \WP_Widget {
     /**
     * Sets up the widgets name etc
     */
-    public function __construct() {
-
-        $widget_ops = array(
-            'classname' => 'social-follow',
-            'description' => 'Social Media',
+    public function __construct(Controllers\Contact $data) {
+        $this->data = $data;
+        parent::__construct(
+            'social_follow',
+            __( 'Carawebs Social Follow', 'carawebs-widgets' ),
+            ['description' => __( 'Social Media Links', 'carawebs-widgets' )]
         );
-        parent::__construct( 'social-follow', 'Carawebs Social Follow', $widget_ops );
+    }
 
+    private function availableChannels()
+    {
+        $channels = $this->data->getSocialDetails();
+        $availableChannels = [];
+        foreach ($channels as $key => $value) {
+            if(empty($value)) continue;
+            $availableChannels[$key] = $value;
+        }
+        return $availableChannels;
     }
 
     /**
@@ -25,19 +35,26 @@ class Social extends \WP_Widget {
     * @param array $args
     * @param array $instance
     */
-    public function widget( $args, $instance ) {
-
-        // outputs the content of the widget
+    public function widget( $args, $instance )
+    {
+        $data = $this->data->getSocialDetails();
+        $include = $instance['included_channels'];
+        $channels = [];
+        foreach ($data as $key => $value) {
+            if(!in_array($key, $include)) continue;
+            if ('linkedin' === $key) {
+                $key = 'LinkedIn';
+            }
+            $channels[$key] = $value;
+        }
         extract( $args );
         $title = apply_filters('widget_title', $instance['title']);
-
         echo $before_widget;
         echo "<h3>{$instance['title']}</h3>";
         echo ! empty( $instance['intro'] ) ? "<p>{$instance['intro']}</p>" : null;
-        $social = new Display\SocialFollow( new Fetch\SiteVariables );
-        $social->links_ul();
+        include dirname(__FILE__).'/partials/social.php';
+        echo $args['after_widget'];
         echo $after_widget;
-        
     }
 
     /**
@@ -45,11 +62,12 @@ class Social extends \WP_Widget {
     *
     * @param array $instance The widget options
     */
-    public function form( $instance ) {
-
-        // outputs the options form on the widget admin page
-        $title    = ! empty( $instance['title'] ) ? esc_attr( $instance['title'] ) : null;
-        $intro    = ! empty( $instance['intro'] ) ? esc_attr( $instance['intro'] ) : null;
+    public function form($instance)
+    {
+        $title = !empty( $instance['title'] ) ? esc_attr( $instance['title'] ) : NULL;
+        $intro = !empty( $instance['intro'] ) ? esc_attr( $instance['intro'] ) : NULL;
+        $included_channels = isset( $instance['included_channels'] ) ? $instance['included_channels'] : [];
+        $available = $this->availableChannels();
 
         ?>
         <p>Enter the widget title here.</p>
@@ -62,8 +80,20 @@ class Social extends \WP_Widget {
             <label for="<?= $this->get_field_id('intro'); ?>"><?php _e('Intro:'); ?></label>
             <input class="widefat" id="<?= $this->get_field_id('intro'); ?>" name="<?php echo $this->get_field_name('intro'); ?>" type="text" value="<?php echo $intro; ?>" />
         </p>
+        <p>Which Social Channels do you want to include?</p>
+        <p>
+            <?php
+            foreach ($available as $key => $value) {
+                $selected = in_array($key, $included_channels) ? ' checked' : NULL;
+                ?>
+                <input id="<?= $key; ?>" type="checkbox" name="<?= $this->get_field_name('included_channels'); ?>[]" value="<?= $key; ?>"<?= $selected;?>>
+                <label for="<?= $key; ?>"><?php echo ucfirst($key); ?></label>
+                <br>
+                <?php
+            }
+            ?>
+        </p>
         <?php wp_nonce_field('nonce', 'social_nonce');
-
     }
 
     /**
@@ -72,7 +102,8 @@ class Social extends \WP_Widget {
     * @param array $new_instance The new options
     * @param array $old_instance The previous options
     */
-    public function update( $new_instance, $old_instance ) {
+    public function update($new_instance, $old_instance)
+    {
 
         $formNonce = $_POST['social_nonce'];
 
@@ -90,9 +121,15 @@ class Social extends \WP_Widget {
         $instance = $old_instance;
         $instance['title'] = strip_tags( $new_instance['title'] );
         $instance['intro'] = strip_tags( $new_instance['intro'] );
+        $instance['included_channels'] = [];
+        if (isset($new_instance['included_channels'])) {
+            foreach ($new_instance['included_channels'] as $value)
+            {
+                if ( '' !== trim( $value ) )
+                    $instance['included_channels'][] = $value;
+            }
+        }
 
         return $instance;
-
     }
-
 }

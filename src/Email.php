@@ -2,23 +2,16 @@
 namespace Carawebs\Widgets;
 
 use Carawebs\Widgets\Controllers;
-use Carawebs\Widgets\Traits\PartialHelpers;
 /**
-* Register an address widget
+* Register an email widget
 *
-* A widget that displays the address data set in the options table.
+* A widget that displays the email set in the options table.
 *
 * @link       http://dev-notes.eu
 * @since      1.0.0
 *
-* @package    Address
-* @subpackage Address/includes
-* @see https://codex.wordpress.org/Widgets_API
-*
 */
-class Address extends \WP_Widget {
-
-    use PartialHelpers;
+class Email extends \WP_Widget {
 
     /**
     * Sets up the widgets name etc
@@ -26,9 +19,9 @@ class Address extends \WP_Widget {
     public function __construct(Controllers\Contact $data) {
         $this->data = $data;
         parent::__construct(
-            'address_widget',                                     // Base ID
-            __( 'Carawebs Address', 'address' ),                  // Name
-            ['description' => __( 'Display address', 'address' )] // Args
+            'email_widget',                                     // Base ID
+            __( 'Carawebs Email', 'address' ),                  // Name
+            ['description' => __( 'Output an email link', 'address' )] // Args
         );
     }
 
@@ -40,13 +33,21 @@ class Address extends \WP_Widget {
     */
     public function widget( $args, $instance )
     {
+        $defaultEmail = $this->data->getAddress()['email'];
+        $defaultEmail = antispambot($defaultEmail);
         echo $args['before_widget'];
         if ( ! empty( $instance['title'] ) ) {
             echo $args['before_title'] . apply_filters( 'widget_title', $instance['title'] ). $args['after_title'];
         }
-        $data = $this->data->getAddress();
-        include $this->partialSelector( 'address' );
-        //include dirname(__FILE__).'/partials/address.php';
+
+        ob_start();
+        ?>
+        <p>
+            <?= $instance['intro'] ?? NULL; ?>
+            <a href='mailto:<?= $defaultEmail; ?>'><?= $defaultEmail; ?></a>
+        </p>
+        <?php
+        echo ob_get_clean();
         echo $args['after_widget'];
     }
 
@@ -58,14 +59,19 @@ class Address extends \WP_Widget {
     public function form( $instance )
     {
         // outputs the options form on admin
-        $title = ! empty( $instance['title'] ) ? $instance['title'] : NULL;//__( 'Optional Title', 'text_domain' );
+        $title = ! empty( $instance['title'] ) ? $instance['title'] : NULL;
+        $intro = ! empty( $instance['intro'] ) ? $instance['intro'] : NULL;
         ?>
         <p>
-            This widget outputs a properly formatted address block.
+            This widget outputs a properly formatted email link.
         </p>
         <p>
             <label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Optional Title:' ); ?></label>
             <input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>">
+        </p>
+        <p>
+            <label for="<?php echo $this->get_field_id( 'intro' ); ?>"><?php _e( 'Optional Intro text:' ); ?></label>
+            <input class="widefat" id="<?php echo $this->get_field_id( 'intro' ); ?>" name="<?php echo $this->get_field_name( 'intro' ); ?>" type="text" value="<?php echo esc_attr( $intro ); ?>">
         </p>
         <?php
     }
@@ -79,8 +85,9 @@ class Address extends \WP_Widget {
     public function update( $new_instance, $old_instance )
     {
         // processes widget options to be saved
-        $instance = array();
+        $instance = [];
         $instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
+        $instance['intro'] = ( ! empty( $new_instance['intro'] ) ) ? strip_tags( $new_instance['intro'] ) : '';
         return $instance;
     }
 }

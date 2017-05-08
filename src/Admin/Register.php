@@ -37,6 +37,7 @@ class Register {
                 'Social',
                 'Contact',
                 'Address',
+                'Email',
                 'FeaturedImage',
                 'TextNoTitle',
                 'Mailchimp'
